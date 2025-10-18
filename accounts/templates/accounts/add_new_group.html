@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static "accounts/add_new_group.css" %}">
+{% endblock css_files %}
+
+{% block page_title %}{% endblock page_title %}
+
+{% block page_content %}
+<div class="container mt-5 col-md-6">
+  <h2 class="mb-4 text-center">افزودن گروه جدید</h2>
+
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="text-center mt-3">
+      <button type="submit" class="btn btn-success btn-lg">ثبت گروه</button><br>
+      <a href="{% url 'home' %}" class="btn btn-secondary btn-lg">بازگشت</a>
+    </div>
+  </form>
+</div>
+
+{% endblock page_content %}
+
+{% block page_scripts %}{% endblock page_scripts %}

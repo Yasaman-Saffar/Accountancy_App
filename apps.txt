@@ -1,0 +1,44 @@
+game_project/
+│
+├── manage.py
+├── game_project/             ← تنظیمات اصلی پروژه
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+│
+├── accounts/                 ← اپ مربوط به ورود، تنظیمات و گروه‌ها
+│   ├── models.py
+│   ├── views.py
+│   ├── forms.py
+│   ├── urls.py
+│   └── templates/accounts/
+│
+├── bank/                     ← اپ اصلی عملیات بانکی و سوال‌ها
+│   ├── models.py
+│   ├── views.py
+│   ├── forms.py
+│   ├── urls.py
+│   └── templates/bank/
+│
+├── market/                   ← اپ مربوط به خرید و فروش کالا
+│   ├── models.py
+│   ├── views.py
+│   ├── forms.py
+│   ├── urls.py
+│   └── templates/market/
+│
+├── scoreboard/               ← اپ تابلوی اعلانات و رتبه‌بندی
+│   ├── models.py
+│   ├── views.py
+│   ├── urls.py
+│   └── templates/scoreboard/
+│
+├── core/                     ← اپ کمکی (مثلاً تایمر، تورم، تنظیمات داینامیک)
+│   ├── models.py
+│   ├── utils.py
+│   ├── management/commands/  ← برای اسکریپت‌های زمان‌بندی (cron job یا command)
+│   └── templates/core/
+│
+└── static/                   ← فایل‌های بوت‌استرپ، css، js، تصاویر

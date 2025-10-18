@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static "core/Home.css" %}">
+{% endblock css_files %}
+
+{% block page_title %}{% endblock page_title %}
+
+{% block page_content %}
+
+    <div class="container text-center mt-5">
+    <h1 class="mb-4"> بانک </h1>
+
+    <div class="d-grid gap-3 col-6 mx-auto">
+        <a href="buying_questions" class="btn btn-success btn-lg"> خرید سوال</a><br>
+        <a class="btn btn-info btn-lg"> تبادل سوال بین گروه ها</a><br>
+        <a class="btn btn-warning btn-lg"> دریافت جایزه سوال</a><br><br>
+
+        <a class="btn btn-info btn-lg"> ذخیره-برداشت پول در-از حساب </a><br><br>
+
+        <a class="btn btn-info btn-lg"> خرید و فروش کالا</a><br><br>
+
+        <a href="{% url 'home' %}" class="btn btn-secondary btn-lg">بازگشت</a>
+        
+    </div>
+    </div>
+
+
+{% endblock page_content %}
+
+{% block page_scripts %}{% endblock page_scripts %}
