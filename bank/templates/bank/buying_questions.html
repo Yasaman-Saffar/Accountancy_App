@@ -23,7 +23,7 @@
     <div class="mb-3">
       <label>انتخاب گروه:</label>
       <select name="team" id="teamSelect" class="form-select" required>
-        <option value="">-- انتخاب گروه --</option>
+        <option value="">انتخاب گروه</option>
         {% for t in teams %}
           <option value="{{ t.id }}">{{ t.team_number }} - {{ t.group_name }}</option>
         {% endfor %}
@@ -40,7 +40,7 @@
     <div class="mb-3">
       <label>سطح سؤال:</label>
       <select name="level" class="form-select" required>
-        <option value="">-- انتخاب سطح --</option>
+        <option value="">انتخاب سطح</option>
         {% for q in questions %}
           <option value="{{ q.level }}">{{ q.get_level_display }} ({{ q.stock }} عدد باقی مانده)</option>
         {% endfor %}
@@ -143,17 +143,15 @@ document.getElementById('buyForm').addEventListener('submit', async function (e)
     msg.classList.add('text-success');
     msg.textContent = data.success;
 
-    if (data.redirect_url) {
-      setTimeout(() => {
-        window.location.href = data.redirect_url;
-      }, 3000);
-    }
-
     form.reset();
     togglePaymentFields(); 
   }
 
   form.appendChild(msg);
+
+  setTimeout(() => {
+    msg.remove();
+  }, 3000);
 });
 
 </script>

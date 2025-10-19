@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static "core/Home.css" %}">
+{% endblock css_files %}
+
+{% block page_title %}{% endblock page_title %}
+
+{% block page_content %}
+
+<div class="container text-center mt-5">
+<div class="container mt-5 col-md-6">
+  <h2 class="mb-4 text-center"> دریافت جایزه سوال</h2>
+
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+
+  <form method="POST" id="buyForm">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label>انتخاب گروه:</label>
+      <select name="team" id="teamSelect" class="form-select" required>
+        <option value="">انتخاب گروه</option>
+        {% for t in teams %}
+          <option value="{{ t.id }}">{{ t.team_number }} - {{ t.group_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label>سطح سؤال:</label>
+      <select name="level" class="form-select" required>
+        <option value="">انتخاب سطح</option>
+        {% for q in questions %}
+          <option value="{{ q.level }}">{{ q.get_level_display }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label>روش دریافت:</label>
+      <select id="receive_method" name="receive_method" class="form-select" onchange="togglePaymentFields()">
+        <option value="cash">نقدی</option>
+        <option value="bank">به حساب</option>
+        <option value="mixed">ترکیبی</option>
+      </select>
+    </div>
+
+    <div id="cash_field" class="mb-3">
+      <label>مبلغ نقدی:</label>
+      <input type="number" name="cash_part" step="50" class="form-control" value="0">
+    </div>
+
+    <div id="bank_field" class="mb-3">
+      <label>مبلغ به حساب:</label>
+      <input type="number" name="bank_part" step="50" class="form-control" value="0">
+    </div>
+
+    <div class="text-center mt-3">
+      <button type="submit" class="btn btn-primary btn-lg">دریافت جایزه</button>
+    </div>
+  </form>
+  <a href="{% url 'bank_home' %}" class="btn btn-secondary btn-lg">بازگشت</a>
+</div>
+
+{% endblock page_content %}
+
+
+{% block page_scripts %}
+<script>
+
+// اول: تابع مخفی/نمایش فیلدها
+function togglePaymentFields() {
+  const method = document.getElementById('receive_method').value;
+  document.getElementById('cash_field').style.display = (method === 'mixed') ? 'block' : 'none';
+  document.getElementById('bank_field').style.display = (method === 'mixed') ? 'block' : 'none';
+}
+togglePaymentFields();
+
+// دوم: گوش دادن به تغییر روش پرداخت
+document.getElementById('receive_method').addEventListener('change', togglePaymentFields);
+
+// سوم: گرفتن اطلاعات گروه موقع انتخاب از منوی گروه
+document.getElementById('teamSelect').addEventListener('change', function() {
+  const teamId = this.value;
+  const infoBox = document.getElementById('teamInfo');
+
+  if (!teamId) {
+    infoBox.style.display = 'none';
+    return;
+  }
+
+  fetch(`/bank/get_team_info/?team_id=${teamId}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        infoBox.style.display = 'none';
+      } else {
+        document.getElementById('teamName').textContent = data.name;
+        document.getElementById('unsolvedCount').textContent = data.unsolved;
+        document.getElementById('solvedCount').textContent = data.solved;
+        infoBox.style.display = 'block';
+      }
+    })
+    .catch(err => console.error("خطا در گرفتن اطلاعات تیم:", err));
+});
+
+// چهارم: ارسال فرم با fetch
+document.getElementById('buyForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+
+  const response = await fetch(form.action || window.location.pathname, {
+    method: 'POST',
+    body: formData,
+    headers: {'X-Requested-With': 'XMLHttpRequest'},
+  });
+
+  const data = await response.json();
+
+  // پاک‌کردن پیام‌های قبلی
+  document.querySelectorAll('.form-message').forEach(el => el.remove());
+
+  const msg = document.createElement('div');
+  msg.classList.add('form-message', 'mt-2');
+  
+  if (data.error) {
+    msg.classList.add('text-danger');
+    msg.textContent = data.error;
+  } else if (data.success) {
+    msg.classList.add('text-success');
+    msg.textContent = data.success;
+
+    form.reset();
+    togglePaymentFields(); 
+  }
+
+  form.appendChild(msg);
+
+  setTimeout(() => {
+    msg.remove();
+  }, 3000);
+  
+});
+
+</script>
+{% endblock page_scripts %}

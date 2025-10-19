@@ -36,4 +36,3 @@ class Question(models.Model):
                 self.sell_price = 600
         super().save(*args, **kwargs)
         
-
