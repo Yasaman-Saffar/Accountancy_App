@@ -83,9 +83,9 @@ WSGI_APPLICATION = "Accountancy_App.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE":"django.db.backends.postgresql",
-        "NAME":"AccountancyApp_DB",
-        "USER":"YasamanSaffar",
-        "PASSWORD":"12345678",
+        "NAME":"AcountancyApp_DB",
+        "USER":"mahdi",
+        "PASSWORD":"mahdi2016",
         "HOST":"localhost",
         "PORT":"5432",
     }

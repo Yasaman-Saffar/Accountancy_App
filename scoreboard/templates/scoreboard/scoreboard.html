@@ -1,17 +1,74 @@
 {% extends "base.html" %}
 {% load static %}
 
-
 {% block css_files %}
     <link rel="stylesheet" href="{% static "core/Home.css" %}">
 {% endblock css_files %}
 
-{% block page_title %}{% endblock page_title %}
+{% block page_title %}جدول امتیازات{% endblock page_title %}
 
 {% block page_content %}
 
-<h1>scoreboard</h1>
+<h3 class="mb-3">جدول امتیازات</h3>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered text-center">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">رتبه</th>
+                <th scope="col">نام گروه</th>
+                <th scope="col">شماره گروه</th>
+                <th scope="col">مجموع امتیاز</th>
+            </tr>
+        </thead>
+        <tbody id="scoreboard-body">
+            <tr><td colspan="4">در حال بارگذاری...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="text-center mt-4">
+    <a href="{% url 'home' %}" class="btn btn-secondary btn-lg">بازگشت</a>
+</div>
 
 {% endblock page_content %}
 
-{% block page_scripts %}{% endblock page_scripts %}
+{% block page_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const tbody = document.getElementById("scoreboard-body");
+    const dataUrl = "{% url 'scoreboard:scoreboard_data' %}";
+
+    async function fetchAndRender() {
+        try {
+            const resp = await fetch(dataUrl, { method: "GET", cache: "no-store" });
+            if (!resp.ok) throw new Error("Network error");
+            const payload = await resp.json();
+            const teams = payload.teams || [];
+
+            if (teams.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">هیچ گروهی یافت نشد.</td></tr>';
+                return;
+            }
+
+            let html = "";
+            for (const t of teams) {
+                html += `<tr>
+                            <td>${t.rank}</td>
+                            <td>${t.group_name}</td>
+                            <td>${t.team_number}</td>
+                            <td>${t.total_assets}</td>
+                         </tr>`;
+            }
+            tbody.innerHTML = html;
+        } catch (err) {
+            console.error("scoreboard fetch error:", err);
+            tbody.innerHTML = '<tr><td colspan="4">خطا در دریافت داده‌ها.</td></tr>';
+        }
+    }
+
+    fetchAndRender();
+    setInterval(fetchAndRender, 5000);
+});
+</script>
+{% endblock page_scripts %}
