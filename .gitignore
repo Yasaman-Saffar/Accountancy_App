@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Django stuff
+*.log
+*.pot
+*.py[cod]
+db.sqlite3
+
+# IDE / system
+.vscode/
+.idea/
+.DS_Store
