@@ -27,7 +27,7 @@ class Team(models.Model):
         ordering = ['team_number']
 
     def __str__(self):
-        return f"{self.team_number} - {self.name}"
+        return f"{self.team_number} - {self.group_name}"
     
     def total_money(self):
         return self.cash + self.bank_balance

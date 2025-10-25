@@ -5,6 +5,10 @@ class Item(models.Model):
     base_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="قیمت پایه")
     current_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="قیمت فعلی")
 
+    class Meta:
+        verbose_name = "کالا"
+        verbose_name_plural = "کالاها"
+        
     def __str__(self):
         return f"{self.name}"
     

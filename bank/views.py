@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from .models import Question
 from accounts.models import Team
 from decimal import Decimal
+from django.db import transaction
 
 
 def bank_home(request):
@@ -22,6 +23,7 @@ def get_team_info(request):
     except Team.DoesNotExist:
         return JsonResponse({'error': 'تیمی با این شناسه وجود ندارد'})
 
+@transaction.atomic
 def buying_questions(request):
     teams = Team.objects.all()
     questions = Question.objects.all()
@@ -78,7 +80,8 @@ def buying_questions(request):
         'questions': questions,
     })
     
-    
+
+@transaction.atomic
 def trading_questions(request):
     teams = Team.objects.all()
     questions = Question.objects.all()
@@ -137,7 +140,8 @@ def trading_questions(request):
         'questions': questions,
     })
     
-    
+
+@transaction.atomic
 def receive_award(request):
     teams = Team.objects.all()
     questions = Question.objects.all()
@@ -166,6 +170,7 @@ def receive_award(request):
         
         team.cash += cash_part
         team.bank_balance += bank_part
+        team.solved_questions += 1
         team.save()
         team.calculate_total_assets()
         
@@ -178,6 +183,7 @@ def receive_award(request):
     })
     
     
+@transaction.atomic
 def withdrawal_and_deposit(request):
     teams = Team.objects.all()
     
