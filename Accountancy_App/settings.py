@@ -86,16 +86,23 @@ WSGI_APPLICATION = "Accountancy_App.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+import os
+from dotenv import load_dotenv
+
+# Load .env
+load_dotenv()
+
 DATABASES = {
-    "default": {
-        "ENGINE":"django.db.backends.postgresql",
-        "NAME":"AccountancyApp_DB",
-        "USER":"YasamanSaffar",
-        "PASSWORD":"12345678",
-        "HOST":"localhost",
-        "PORT":"5432",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
 }
+
 
 
 # Password validation
