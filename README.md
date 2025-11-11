@@ -76,7 +76,7 @@ The app keeps the bank ledger, tracks solved questions, applies inflation and in
 ## Installation
 
 ```bash
-git clone https://github.com/Yasaman-Saffar/AccountancyApp.git
+git clone https://github.com/Yasaman-Saffar/Accountancy_App.git
 cd AccountancyApp
 python -m venv .venv
 source .venv/bin/activate  # or .venv\Scripts\activate on Windows
