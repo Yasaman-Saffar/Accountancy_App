@@ -1,0 +1,132 @@
+/* این کل بخش را وسط صفحه (عمودی + افقی) نگه می‌دارد */
+#scoreboard-container {
+  display: flex;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+/* این دوتا جدول را کنار هم می‌چیند */
+.scoreboard-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  max-width: 1800px; /* افزایش عرض کل */
+  margin: 0 auto;
+}
+
+/* جدول اصلی بزرگ‌تر */
+.score-table {
+  flex: 10;
+  min-width: 1000px;
+}
+
+/* باکس قیمت‌ها کوچک‌تر */
+.items-box {
+  flex: 5;
+  min-width: 500px;
+}
+
+/* برای خوانایی بهتر لیست کالا */
+.items-box .list-group-item {
+  font-size: 2rem;    /* بزرگ‌تر شدن متن */
+  padding: 14px 18px;   /* جا دارتر */
+}
+
+
+.loading-placeholder {
+   padding: 24px; 
+}
+
+
+tbody tr.score-row {
+  position: relative;           
+  will-change: transform;
+  transform: translateZ(0);      
+}
+
+.fade, .fade-row {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Table font size */
+.table {
+  font-size: clamp(0.8rem, 1vw + 0.4rem, 1.5rem);
+}
+
+/* Table header */
+.table thead th {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+/* Compact row spacing */
+.table td, .table th {
+  padding: 0.75rem;
+}
+
+.table {
+  width: 100%;
+  table-layout: auto;
+}
+
+@media (max-height: 700px) {
+  .table {
+    font-size: 0.8rem;
+  }
+}
+
+
+
+
+
+/* --- حالت واکنش‌گرا (Responsive) --- */
+@media (max-width: 992px) {
+  
+  /* چینش ستون‌ها به حالت عمودی */
+  .scoreboard-wrapper {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* جدول بزرگ تمام عرض */
+  .score-table {
+    flex: none;
+    width: 100%;
+    min-width: auto;
+  }
+
+  /* باکس قیمت‌ها هم تمام عرض */
+  .items-box {
+    flex: none;
+    width: 100%;
+    min-width: auto;
+  }
+
+  /* کمی کوچک‌تر کردن فونت‌ها برای جا شدن بهتر روی موبایل */
+  .table {
+    font-size: 0.9rem;
+  }
+
+  .items-box .list-group-item {
+    font-size: 1.2rem;
+    padding: 10px 14px;
+  }
+}
+
+/* حالت بسیار کوچک (موبایل‌های قدیمی یا عمودی) */
+@media (max-width: 600px) {
+  .table {
+    font-size: 0.75rem;
+  }
+
+  .items-box .list-group-item {
+    font-size: 1rem;
+  }
+}

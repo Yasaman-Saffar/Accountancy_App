@@ -5,8 +5,8 @@ from . import views
 app_name = "scoreboard"
 
 urlpatterns = [
-    # صفحه‌ی اصلی اسکربرد -> /scoreboard/
+    # Main scoreboard page -> /scoreboard/
     path("", views.scoreboard, name="scoreboard"),
-    # API برای داده‌های جدول -> /scoreboard/data/
+    # API endpoint for scoreboard table data -> /scoreboard/data/
     path("data/", views.scoreboard_data, name="scoreboard_data"),
 ]

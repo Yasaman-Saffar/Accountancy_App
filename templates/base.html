@@ -7,16 +7,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static "bootstrap/bootstrap.min.css" %}">
     <link rel="stylesheet" href="{% static "css/base.css" %}">
+
     {% block css_files %}{% endblock css_files %}
     <title>{% block page_title %}{% endblock page_title %}</title>
 </head>
-<body class="rtl d-flex justify-content-center align-items-center min-vh-100 text-center">
-    
-    <div class="w-100" style="max-width: 600px;">
+
+<body class="rtl text-center">
+  {% include "includes/navbar.html" %}
+
+    <div class="d-flex justify-content-center align-items-center min-vh-100" >
+      <div class="w-100" style="max-width: 1000px;">
         {% block page_content %}{% endblock page_content %}
+      </div>
     </div>
 
-    {% block page_scripts %}{% endblock page_scripts %}
+  {% block page_scripts %}{% endblock page_scripts %}
+
+  <script src="{% static "bootstrap/bootstrap.bundle.min.js" %}"></script>
+
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <script>
+    // htmx csrf
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.addEventListener('htmx:configRequest', (event) => {
+        event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+      });
+    });
+  </script>
 </body>
- 
 </html>

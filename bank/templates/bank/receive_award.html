@@ -3,20 +3,28 @@
 
 
 {% block css_files %}
-    <link rel="stylesheet" href="{% static "core/Home.css" %}">
+    <link rel="stylesheet" href="{% static "bank/receive_award.css" %}">
 {% endblock css_files %}
 
-{% block page_title %}{% endblock page_title %}
+{% block page_title %}دریافت جایزه سوال{% endblock page_title %}
 
 {% block page_content %}
 
-<div class="container text-center mt-5">
-<div class="container mt-5 col-md-6">
-  <h2 class="mb-4 text-center"> دریافت جایزه سوال</h2>
+<div class="container text-center">
+ <div class="container col-md-5">
 
-  {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-  {% endfor %}
+  <!-- Messages Section -->
+  <div class="message-container mb-3" style="min-height: 60px;">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{ message.tags }} text-center" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+  </div>
+
+  <h2 class="mb-4 text-center"> دریافت جایزه سوال </h2>
 
   <form method="POST" id="buyForm">
     {% csrf_token %}
@@ -40,30 +48,11 @@
       </select>
     </div>
 
-    <div class="mb-3">
-      <label>روش دریافت:</label>
-      <select id="receive_method" name="receive_method" class="form-select" onchange="togglePaymentFields()">
-        <option value="cash">نقدی</option>
-        <option value="bank">به حساب</option>
-        <option value="mixed">ترکیبی</option>
-      </select>
-    </div>
-
-    <div id="cash_field" class="mb-3">
-      <label>مبلغ نقدی:</label>
-      <input type="number" name="cash_part" step="50" class="form-control" value="0">
-    </div>
-
-    <div id="bank_field" class="mb-3">
-      <label>مبلغ به حساب:</label>
-      <input type="number" name="bank_part" step="50" class="form-control" value="0">
-    </div>
-
     <div class="text-center mt-3">
       <button type="submit" class="btn btn-primary btn-lg">دریافت جایزه</button>
+      <a href="{% url 'bank:bank_home' %}" class="btn btn-secondary btn-lg">بازگشت</a>
     </div>
   </form>
-  <a href="{% url 'bank:bank_home' %}" class="btn btn-secondary btn-lg">بازگشت</a>
 </div>
 
 {% endblock page_content %}
@@ -72,80 +61,29 @@
 {% block page_scripts %}
 <script>
 
-// اول: تابع مخفی/نمایش فیلدها
-function togglePaymentFields() {
-  const method = document.getElementById('receive_method').value;
-  document.getElementById('cash_field').style.display = (method === 'mixed') ? 'block' : 'none';
-  document.getElementById('bank_field').style.display = (method === 'mixed') ? 'block' : 'none';
-}
-togglePaymentFields();
+document.addEventListener('DOMContentLoaded', function() {
 
-// دوم: گوش دادن به تغییر روش پرداخت
-document.getElementById('receive_method').addEventListener('change', togglePaymentFields);
+    // Fading alerts
+    const alerts = document.querySelectorAll('.alert:not(.alert-success)');
 
-// سوم: گرفتن اطلاعات گروه موقع انتخاب از منوی گروه
-document.getElementById('teamSelect').addEventListener('change', function() {
-  const teamId = this.value;
-  const infoBox = document.getElementById('teamInfo');
+    alerts.forEach(alert => {
+      setTimeout(() => {
+        alert.style.transition = "opacity 1s";
+        alert.style.opacity = "0";
 
-  if (!teamId) {
-    infoBox.style.display = 'none';
-    return;
-  }
+        setTimeout(() => {
+          alert.remove();
+        }, 1000);
+      }, 3000);
+    });
 
-  fetch(`/bank/get_team_info/?team_id=${teamId}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) {
-        infoBox.style.display = 'none';
-      } else {
-        document.getElementById('teamName').textContent = data.name;
-        document.getElementById('unsolvedCount').textContent = data.unsolved;
-        document.getElementById('solvedCount').textContent = data.solved;
-        infoBox.style.display = 'block';
-      }
-    })
-    .catch(err => console.error("خطا در گرفتن اطلاعات تیم:", err));
-});
-
-// چهارم: ارسال فرم با fetch
-document.getElementById('buyForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
-
-  const form = e.target;
-  const formData = new FormData(form);
-
-  const response = await fetch(form.action || window.location.pathname, {
-    method: 'POST',
-    body: formData,
-    headers: {'X-Requested-With': 'XMLHttpRequest'},
-  });
-
-  const data = await response.json();
-
-  // پاک‌کردن پیام‌های قبلی
-  document.querySelectorAll('.form-message').forEach(el => el.remove());
-
-  const msg = document.createElement('div');
-  msg.classList.add('form-message', 'mt-2');
-  
-  if (data.error) {
-    msg.classList.add('text-danger');
-    msg.textContent = data.error;
-  } else if (data.success) {
-    msg.classList.add('text-success');
-    msg.textContent = data.success;
-
-    form.reset();
-    togglePaymentFields(); 
-  }
-
-  form.appendChild(msg);
-
-  setTimeout(() => {
-    msg.remove();
-  }, 3000);
-  
+    // If the operation was successful, the page reloads after 2 seconds
+    const successAlert = document.querySelector('.alert-success');
+    if (successAlert) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 2700);
+    }
 });
 
 </script>

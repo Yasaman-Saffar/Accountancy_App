@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static "core/setting.css" %}">
+{% endblock css_files %}
+
+{% block page_title %}تنظیمات اولیه{% endblock page_title %}
+
+{% block page_content %}
+    
+    <div class="container text-center mt-5">
+    <h1 class="mb-4">تنظیمات اولیه مسابقه</h1>
+
+    <div class="d-grid gap-3 col-6 mx-auto">
+        <a href="{% url 'core:setup_step1' %}" class="btn btn-dark btn-lg">داده‌های اولیه</a>
+        <a href="{% url 'account:add_new_group' %}" class="btn btn-primary btn-lg">افزودن گروه</a>
+        <a href="{% url 'core:Entry_page' %}" class="btn btn-secondary btn-lg">بازگشت</a>
+    </div>
+    </div>
+    
+
+{% endblock page_content %}
+
+{% block page_scripts %}{% endblock page_scripts %}

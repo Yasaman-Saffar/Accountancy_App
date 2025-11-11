@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static "core/Entry_page.css" %}">
+{% endblock css_files %}
+
+{% block page_title %}صفحه ورود{% endblock page_title %}
+
+{% block page_content %}
+    
+    <div class="container text-center mt-5">
+    <h1 class="mb-4"> Calc & Cash</h1>
+
+    <div class="d-grid gap-3 col-6 mx-auto">
+        <a href="{% url 'core:setting' %}" class="btn btn-success btn-lg"> تنظیم مسابقه</a>
+        <a href="{% url 'core:home' %}" class="btn btn-danger btn-lg"> شروع رقابت</a>
+    </div>
+    </div>
+    
+
+{% endblock page_content %}
+
+{% block page_scripts %}{% endblock page_scripts %}

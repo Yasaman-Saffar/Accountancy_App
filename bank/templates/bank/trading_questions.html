@@ -3,26 +3,36 @@
 
 
 {% block css_files %}
-    <link rel="stylesheet" href="{% static "core/Home.css" %}">
+    <link rel="stylesheet" href="{% static "bank/trading_questions.css" %}">
 {% endblock css_files %}
 
-{% block page_title %}{% endblock page_title %}
+{% block page_title %}تبادل سوال{% endblock page_title %}
 
 {% block page_content %}
 
-<div class="container text-center mt-5">
-<div class="container mt-5 col-md-6">
-  <h2 class="mb-4 text-center"> تبادل سوال بین گروه‌ها</h2>
+<div class="container text-center">
+ <div class="container col-md-5">
 
-  {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-  {% endfor %}
+  <!-- Messages Section -->
+  <div class="message-container mb-3" style="min-height: 60px;">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{ message.tags }} text-center" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+  </div>
+
+
+
+  <h2 class="mb-4 text-center">تبادل سوال بین گروه‌ها</h2>
 
   <form method="POST" id="buyForm">
     {% csrf_token %}
     <div class="mb-3">
       <label> انتخاب گروه فروشنده:</label>
-      <select name="seller_team" id="teamSelect" class="form-select" required>
+      <select name="seller_team" id="sellerSelect" class="form-select" required>
         <option value="">انتخاب گروه فروشنده</option>
         {% for t in teams %}
           <option value="{{ t.id }}">{{ t.team_number }} - {{ t.group_name }}</option>
@@ -32,7 +42,7 @@
 
     <div class="mb-3">
       <label>انتخاب گروه خریدار:</label>
-      <select name="recipient_team" id="teamSelect" class="form-select" required>
+      <select name="recipient_team" id="buyerSelect" class="form-select" required>
         <option value="">انتخاب گروه خریدار</option>
         {% for t in teams %}
           <option value="{{ t.id }}">{{ t.team_number }} - {{ t.group_name }}</option>
@@ -45,30 +55,11 @@
       <input type="number" name="consensual_price" class="form-control" value="0">
     </div>
 
-    <div class="mb-3">
-      <label>روش پرداخت:</label>
-      <select id="pay_method" name="pay_method" class="form-select" onchange="togglePaymentFields()">
-        <option value="cash"> نقدی</option>
-        <option value="bank"> از حساب</option>
-        <option value="mixed"> ترکیبی</option>
-      </select>
-    </div>
-
-    <div id="cash_field" class="mb-3">
-      <label>مبلغ نقدی:</label>
-      <input type="number" name="cash_part" step="50" class="form-control" value="0">
-    </div>
-
-    <div id="bank_field" class="mb-3">
-      <label>مبلغ از حساب:</label>
-      <input type="number" name="bank_part" step="50" class="form-control" value="0">
-    </div>
-
     <div class="text-center mt-3">
       <button type="submit" class="btn btn-primary btn-lg">تبادل سؤال</button>
+      <a href="{% url 'bank:bank_home' %}" class="btn btn-secondary btn-lg">بازگشت</a>
     </div>
   </form>
-  <a href="{% url 'bank_home' %}" class="btn btn-secondary btn-lg">بازگشت</a>
 </div>
 
 {% endblock page_content %}
@@ -77,81 +68,30 @@
 {% block page_scripts %}
 <script>
 
-// اول: تابع مخفی/نمایش فیلدها
-function togglePaymentFields() {
-  const method = document.getElementById('pay_method').value;
-  document.getElementById('cash_field').style.display = (method === 'mixed') ? 'block' : 'none';
-  document.getElementById('bank_field').style.display = (method === 'mixed') ? 'block' : 'none';
-}
-togglePaymentFields();
+document.addEventListener('DOMContentLoaded', function() {
 
-// دوم: گوش دادن به تغییر روش پرداخت
-document.getElementById('pay_method').addEventListener('change', togglePaymentFields);
+      // Fading alerts
+      const alerts = document.querySelectorAll('.alert:not(.alert-success)');
 
-// سوم: گرفتن اطلاعات گروه موقع انتخاب از منوی گروه
-document.getElementById('teamSelect').addEventListener('change', function() {
-  const teamId = this.value;
-  const infoBox = document.getElementById('teamInfo');
+      alerts.forEach(alert => {
+        setTimeout(() => {
+          alert.style.transition = "opacity 1s";
+          alert.style.opacity = "0";
 
-  if (!teamId) {
-    infoBox.style.display = 'none';
-    return;
-  }
+          setTimeout(() => {
+            alert.remove();
+          }, 1000);
+        }, 3000);
+      });
 
-  fetch(`/bank/get_team_info/?team_id=${teamId}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) {
-        infoBox.style.display = 'none';
-      } else {
-        document.getElementById('teamName').textContent = data.name;
-        document.getElementById('unsolvedCount').textContent = data.unsolved;
-        document.getElementById('solvedCount').textContent = data.solved;
-        infoBox.style.display = 'block';
+      // If the operation was successful, the page reloads after 2 seconds
+      const successAlert = document.querySelector('.alert-success');
+      if (successAlert) {
+          setTimeout(() => {
+            window.location.reload();
+          }, 2700);
       }
-    })
-    .catch(err => console.error("خطا در گرفتن اطلاعات تیم:", err));
-});
-
-// چهارم: ارسال فرم با fetch
-document.getElementById('buyForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
-
-  const form = e.target;
-  const formData = new FormData(form);
-
-  const response = await fetch(form.action || window.location.pathname, {
-    method: 'POST',
-    body: formData,
-    headers: {'X-Requested-With': 'XMLHttpRequest'},
   });
-
-  const data = await response.json();
-
-  // پاک‌کردن پیام‌های قبلی
-  document.querySelectorAll('.form-message').forEach(el => el.remove());
-
-  const msg = document.createElement('div');
-  msg.classList.add('form-message', 'mt-2');
-  
-  if (data.error) {
-    msg.classList.add('text-danger');
-    msg.textContent = data.error;
-  } else if (data.success) {
-    msg.classList.add('text-success');
-    msg.textContent = data.success;
-
-    form.reset();
-    togglePaymentFields(); 
-  }
-
-  form.appendChild(msg);
-
-    setTimeout(() => {
-    msg.remove();
-  }, 3000);
-
-});
 
 </script>
 {% endblock page_scripts %}

@@ -1,0 +1,97 @@
+<div class="scoreboard-wrapper">
+
+  <!-- جدول اول -->
+  <div class="score-table">
+    <table class="table table-striped table-bordered text-center align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>رتبه</th>
+          <th>نام گروه</th>
+          <th>شماره گروه</th>
+          <th>حساب بانکی</th>
+          <th>مجموع دارایی (حساب + قیمت فعلی کالا)</th>
+          <th>سؤالات حل‌شده</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for team in teams %}
+        <tr class="score-row" data-key="{{ team.id }}">
+          <td>{{ team.rank }}</td>
+          <td>{{ team.group_name }}</td>
+          <td>{{ team.team_number }}</td>
+          <td>{{ team.bank_balance }}</td>
+          <td>{{ team.total_assets }}</td>
+          <td>{{ team.solved_questions }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">هیچ گروهی یافت نشد.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- لیست قیمت‌ها -->
+  <div class="items-box">
+    <ul class="list-group list-group-flush">
+      {% for item in items %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>{{ item.name }}</span>
+        <small class="text-muted"><strong>{{ item.current_price }}</strong></small>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+</div>
+
+
+
+
+{% comment %} <div class="d-flex justify-content-between align-items-start gap-4" style="width: 100%;">
+
+  <div style="flex: 3;">
+    <table class="table table-striped table-bordered text-center align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>رتبه</th>
+          <th>نام گروه</th>
+          <th>شماره گروه</th>
+          <th>حساب بانکی</th>
+          <th>(حساب + قیمت فعلی کالا)مجموع دارایی</th>
+          <th>سؤالات حل‌شده</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for team in teams %}
+        <!-- Unique key for FLIP animation -->
+        <tr class="score-row" data-key="{{ team.id }}">
+          <td>{{ team.rank }}</td>
+          <td>{{ team.group_name }}</td>
+          <td>{{ team.team_number }}</td>
+          <td>{{ team.bank_balance }}</td>
+          <td>{{ team.total_assets }}</td>
+          <td>{{ team.solved_questions }}</td>
+        </tr>
+        {% empty %}
+        <tr class="score-row" data-key="_empty"><td colspan="5">هیچ گروهی یافت نشد.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+<!-- items' prices -->
+  <div style="flex: 2;">
+    <h5 class="fw-bold mb-3 text-center">قیمت کالاهای فعلی</h5>
+
+    <ul class="list-group list-group-flush">
+      {% for item in items %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>{{ item.name }}</span>
+        <small class="text-muted">
+          <strong>{{ item.current_price }}</strong>
+        </small>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div> {% endcomment %}

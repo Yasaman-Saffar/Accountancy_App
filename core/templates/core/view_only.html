@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block page_title %}مشاهده تنظیمات مسابقه{% endblock %}
+
+{% block page_content %}
+<div class="container mt-5 text-center" dir="rtl">
+
+  <h2 class="mb-5 fw-bold text-primary">📊 اطلاعات کلی مسابقه</h2>
+
+  {% if setting and questions and items and inflations %}
+  <!-- Generic Setting -->
+  <div class="card shadow-lg border-0 mb-5">
+    <div class="card-header bg-primary text-white fs-5">تنظیمات کلی مسابقه</div>
+    <div class="card-body text-end fs-6 bg-light">
+      <p>⏱ <strong>مدت زمان مسابقه:</strong> {{ setting.duration_hours }} ساعت و {{ setting.duration_minutes }} دقیقه</p>
+      <p>🏦 <strong>نرخ سود بانک:</strong> {{ setting.bank_interest_rate }}%</p>
+      <p>⏰ <strong>فاصله پرداخت سود:</strong> هر {{ setting.bank_interest_interval }} ثانیه</p>
+      <p>💰 <strong>سرمایه اولیه هر گروه:</strong> {{ setting.initial_capital }}</p>
+    </div>
+  </div>
+
+  <!-- Questions Part -->
+  <div class="card shadow-lg border-0 mb-5">
+    <div class="card-header bg-info text-white fs-5">مشخصات سؤالات</div>
+    <div class="card-body bg-light">
+      <div class="row">
+        {% for q in questions %}
+        <div class="col-md-4 mb-3">
+          <div class="border rounded bg-white shadow-sm p-3 text-end h-100">
+            <h6 class="text-primary fw-bold">سطح: {{ q.level|title }}</h6>
+            <p>🔢 تعداد: <strong>{{ q.stock }}</strong></p>
+            <p>💸 قیمت خرید: <strong>{{ q.buy_price }}</strong></p>
+            <p>🎁 جایزه سؤال: <strong>{{ q.sell_price }}</strong></p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Items and Inflations-->
+  <div class="card shadow-lg border-0 mb-5">
+    <div class="card-header bg-success text-white fs-5">کالاها و قیمت‌ها در تورم‌های مختلف</div>
+    <div class="card-body bg-light">
+
+      {% for item in items %}
+      <div class="border rounded bg-white p-3 mb-4 shadow-sm text-end">
+        <h6 class="fw-bold text-success">{{ item.name }}</h6>
+        <p>💰 قیمت پایه: <strong>{{ item.base_price }}</strong></p>
+        <p>💰 قیمت فعلی: <strong>{{ item.current_price }}</strong></p>
+
+        <div class="table-responsive mt-3">
+          <table class="table table-bordered text-center align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>دور تورم</th>
+                <th>قیمت کالا</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for inf in inflations %}
+                {% if inf.item.id == item.id %}
+                <tr>
+                  <td>تورم {{ inf.round_number }}</td>
+                  <td>{{ inf.price }}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% else %}
+  <div class="alert alert-danger mt-4">هنوز اطلاعاتی توسط مدیر ثبت نشده است.</div>
+  {% endif %}
+
+  <a href="{% url 'core:setting' %}" class="btn btn-secondary btn-lg mt-4 mb-5 shadow-sm px-5">
+    بازگشت
+  </a>
+
+</div>
+{% endblock %}

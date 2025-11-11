@@ -7,7 +7,6 @@ class Team(models.Model):
     team_number = models.PositiveIntegerField(unique=True, verbose_name='شماره گروه')
     
     # Financial information
-    cash = models.DecimalField(max_digits=12, decimal_places=0, default=700, verbose_name='پول نقد')
     bank_balance = models.DecimalField(max_digits=12, decimal_places=0, default=0, verbose_name="موجودی حساب بانکی")
     
     # Items
@@ -19,7 +18,6 @@ class Team(models.Model):
     
     # Assets and rank calaulations
     total_assets = models.DecimalField(max_digits=14, decimal_places=2, default=700, verbose_name="کل دارایی")
-    rank = models.PositiveIntegerField(default=1, verbose_name="رتبه دارایی")
     
     class Meta:
         verbose_name = "گروه"
@@ -30,14 +28,13 @@ class Team(models.Model):
         return f"{self.team_number} - {self.group_name}"
     
     def total_money(self):
-        return self.cash + self.bank_balance
+        return self.bank_balance
 
     def calculate_total_assets(self):
         items_value = sum([
             team_item.item.current_price * team_item.quantity
             for team_item in self.teamitem_set.all()
         ])
-        self.total_assets = self.cash + self.bank_balance + items_value
+        self.total_assets = self.bank_balance + items_value
         self.save()
         return self.total_assets
-

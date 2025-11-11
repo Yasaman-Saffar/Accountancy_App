@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_htmx",
     
     "core",
     "accounts",
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     "market",
     "scoreboard",
 ]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -53,6 +55,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
+    
+    "Accountancy_App.middleware.BankerAndAdminAccessControl",
 ]
 
 ROOT_URLCONF = "Accountancy_App.urls"
@@ -69,6 +74,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'core.context_processors.user_roles',
             ],
         },
     },
@@ -83,9 +89,9 @@ WSGI_APPLICATION = "Accountancy_App.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE":"django.db.backends.postgresql",
-        "NAME":"AcountancyApp_DB",
-        "USER":"mahdi",
-        "PASSWORD":"mahdi2016",
+        "NAME":"AccountancyApp_DB",
+        "USER":"YasamanSaffar",
+        "PASSWORD":"12345678",
         "HOST":"localhost",
         "PORT":"5432",
     }
@@ -114,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = 'fa'
 
 TIME_ZONE = "UTC"
 

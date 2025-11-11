@@ -6,22 +6,63 @@
     <link rel="stylesheet" href="{% static "accounts/add_new_group.css" %}">
 {% endblock css_files %}
 
-{% block page_title %}{% endblock page_title %}
+{% block page_title %}گروه جدید{% endblock page_title %}
 
 {% block page_content %}
+
 <div class="container mt-5 col-md-6">
+
+  <!-- Messages Section -->
+  <div class="message-container mb-3" style="min-height: 60px;">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{ message.tags }} text-center" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+  </div>
+
   <h2 class="mb-4 text-center">افزودن گروه جدید</h2>
 
+  <!-- Form Section -->
   <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
-    <div class="text-center mt-3">
-      <button type="submit" class="btn btn-success btn-lg">ثبت گروه</button><br>
-      <a href="{% url 'core:home' %}" class="btn btn-secondary btn-lg">بازگشت</a>
+
+    <div class="text-center mt-4 mb-5">
+      <button type="submit" class="btn btn-primary btn-lg">ثبت گروه</button>
+      <a href="{% url 'core:setting' %}" class="btn btn-secondary btn-lg">بازگشت</a>
     </div>
+
   </form>
 </div>
 
 {% endblock page_content %}
 
-{% block page_scripts %}{% endblock page_scripts %}
+{% block page_scripts %}
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const alerts = document.querySelectorAll('.alert:not(.alert-success)');
+
+      alerts.forEach(alert => {
+        setTimeout(() => {
+          alert.style.transition = "opacity 1s";
+          alert.style.opacity = "0";
+
+          setTimeout(() => {
+            alert.remove();
+          }, 1000);
+        }, 3000);
+      });
+
+      // If the operation was successful, the page reloads after 2 seconds
+      const successAlert = document.querySelector('.alert-success');
+      if (successAlert) {
+          setTimeout(() => {
+            window.location.href = "{% url 'account:add_new_group' %}";
+          }, 2000);
+      }
+  });
+  </script>
+{% endblock page_scripts %}

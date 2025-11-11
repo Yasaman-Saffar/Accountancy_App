@@ -1,15 +1,38 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block css_files %}
+    <link rel="stylesheet" href="{% static "market/dealing_items.css" %}">
+{% endblock css_files %}
+
+{% block page_title %}خرید و فروش کالا{% endblock page_title %}
+
 {% block page_content %}
-<div class="container mt-5 col-md-8">
-  <h2 class="text-center mb-4">خرید و فروش کالا</h2><br>
+
+<div class="container text-center">
+ <div class="container col-md-5">
+
+  <!-- Messages Section -->
+  <div class="message-container mb-3" style="min-height: 60px;">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{ message.tags }} text-center" role="alert" dir="rtl">
+                {{ message|safe  }}
+            </div>
+        {% endfor %}
+    {% endif %}
+  </div>
+
+
+
+
+  <h2 class="text-center mb-3">خرید و فروش کالا</h2>
 
   <form method="POST" id="dealForm">
     {% csrf_token %}
     <div class="row mb-3">
       <div class="col-md-4">
-        <label>گروه:</label>
+        <label class="text-center mb-3">گروه:</label>
         <select name="team" id="teamSelect" class="form-select" required>
           <option value="">انتخاب گروه</option>
           {% for t in teams %}
@@ -17,6 +40,8 @@
           {% endfor %}
         </select>
       </div>
+
+
       <div id="teamInfo" class="alert alert-secondary" style="display:none;">
         <h6>کالاهای تیم:</h6>
         <div id="teamItems"></div>
@@ -24,36 +49,16 @@
 
 
       <div class="col-md-4">
-        <label>نوع عملیات:</label>
+        <label class="text-center mb-3">نوع عملیات:</label>
         <select name="operation" class="form-select" required>
           <option value="buying">خرید از بانک</option>
           <option value="selling">فروش به بانک</option>
         </select>
       </div>
 
-      <div class="col-md-4">
-        <label>روش پرداخت:</label>
-        <select id="pay_method" name="pay_method" class="form-select" onchange="togglePaymentFields()">
-          <option value="cash">نقدی</option>
-          <option value="bank">حساب</option>
-          <option value="mixed">ترکیبی</option>
-        </select>
-      </div>
-    </div>
 
-    <div id="cash_field" class="mb-3">
-      <label>مبلغ نقدی:</label>
-      <input type="number" name="cash_part" step="50" class="form-control" value="0">
-    </div>
-
-    <div id="bank_field" class="mb-3">
-      <label>مبلغ بانکی:</label>
-      <input type="number" name="bank_part" step="50" class="form-control" value="0">
-    </div>
-
-    <hr>
+    <br><hr><br>
     <h5 class="text-center mb-3">لیست کالاها</h5>
-
     <table class="table table-striped table-bordered text-center align-middle">
       <thead class="table-dark">
         <tr>
@@ -75,43 +80,37 @@
       </tbody>
     </table>
 
+    <div id="error_Message" class="text-danger fw-bold mt-3"></div>
+
     <div class="text-center mt-3">
-      <button type="submit" class="btn btn-primary btn-lg">ثبت عملیات</button>
+      <button type="submit" class="btn btn-primary btn-lg mt-3">ثبت عملیات</button>
+      <a href="{% url 'bank:bank_home' %}" class="btn btn-secondary btn-lg mt-3">بازگشت</a>
     </div>
   </form>
-
-  <div id="messageBox" class="mt-4 text-center fw-bold"></div>
-  <a href="{% url 'bank:bank_home' %}" class="btn btn-secondary mt-3">بازگشت</a>
 </div>
 {% endblock %}
 
 {% block page_scripts %}
 <script>
 
-function togglePaymentFields() {
-  const method = document.getElementById('pay_method').value;
-  document.getElementById('cash_field').style.display = (method === 'mixed') ? 'block' : 'none';
-  document.getElementById('bank_field').style.display = (method === 'mixed') ? 'block' : 'none';
-}
-togglePaymentFields();
+document.addEventListener("DOMContentLoaded", function () {
 
 document.getElementById('teamSelect').addEventListener('change', function() {
   const teamId = this.value;
   const infoBox = document.getElementById('teamInfo');
   const itemList = document.getElementById('teamItems');
 
-  // اگر تیمی انتخاب نشد، باکس بسته شود
   if (!teamId) {
     infoBox.style.display = 'none';
     itemList.innerHTML = '';
     return;
   }
 
-  // درخواست به سرور برای گرفتن کالاهای تیم
+  //Request to the server to get team items
   fetch(`/market/get_team_item_info/?team_id=${teamId}`)
     .then(res => res.json())
     .then(data => {
-      itemList.innerHTML = ''; // پاک کردن لیست قبلی
+      itemList.innerHTML = ''; // deleting last group
 
       if (data.error) {
         infoBox.style.display = 'none';
@@ -119,11 +118,10 @@ document.getElementById('teamSelect').addEventListener('change', function() {
         return;
       }
 
-      // اگر تیم هیچ کالایی ندارد
       if (!data.items || data.items.length === 0) {
         itemList.innerHTML = '<em>هیچ کالایی برای این تیم ثبت نشده است.</em>';
       } else {
-        // نمایش کالاها و تعدادشان
+        // showing items and prices
         data.items.forEach(obj => {
           const row = document.createElement('div');
           row.textContent = `کالا: ${obj.item} | تعداد: ${obj.quantity}`;
@@ -139,33 +137,30 @@ document.getElementById('teamSelect').addEventListener('change', function() {
     });
 });
 
-document.getElementById('dealForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
-  const form = e.target;
-  const formData = new FormData(form);
+      // Fading alerts
+      const alerts = document.querySelectorAll('.alert:not(.alert-success):not(.alert-secondary)');
 
-  const response = await fetch(form.action || window.location.pathname, {
-    method: 'POST',
-    body: formData,
-    headers: {'X-Requested-With': 'XMLHttpRequest'},
-  });
+      alerts.forEach(alert => {
+        setTimeout(() => {
+          alert.style.transition = "opacity 1s";
+          alert.style.opacity = "0";
 
-  const data = await response.json();
-  const msgBox = document.getElementById('messageBox');
-  msgBox.textContent = '';
-  msgBox.className = 'mt-4 text-center fw-bold';
+          setTimeout(() => {
+            alert.remove();
+          }, 1000);
+        }, 3000);
+      });
 
-  if (data.error) {
-    msgBox.classList.add('text-danger');
-    msgBox.textContent = data.error;
-  } else if (data.success) {
-    msgBox.classList.add('text-success');
-    msgBox.innerHTML = data.success.join('<br>');
-    form.reset();
-    togglePaymentFields();
-  }
 
-  setTimeout(() => msgBox.textContent = '', 4000);
+      // If the operation was successful, the page reloads after 2 seconds
+      const successAlert = document.querySelector('.alert-success');
+      if (successAlert) {
+          setTimeout(() => {
+            window.location.reload();
+          }, 2700);
+      }
 });
+
+
 </script>
 {% endblock %}

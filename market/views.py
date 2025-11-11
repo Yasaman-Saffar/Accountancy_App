@@ -1,9 +1,12 @@
-from django.shortcuts import render
-from accounts.models import Team
-from django.http import JsonResponse
-from .models import Item, TeamItem
-from decimal import Decimal
+from django.shortcuts import render, redirect
 from django.db import transaction
+from django.http import JsonResponse
+from decimal import Decimal
+from django.contrib import messages
+
+from .models import Item, TeamItem
+from accounts.models import Team
+
 
 def get_team_item_info(request):
     team_id = request.GET.get('team_id')
@@ -29,11 +32,17 @@ def dealing_items(request):
     items = Item.objects.all()
     
     if request.method == 'POST':
+        
+        if not items:
+            messages.error(
+                request,
+                'هیچی کالایی برای خرید و فروش وجود ندارد',
+                extra_tags='alert-danger'
+            )
+            return redirect('market:dealing_items')
+        
         team_id = request.POST.get('team')
         operation = request.POST.get('operation')
-        pay_method = request.POST.get('pay_method')
-        cash_part = Decimal(request.POST.get('cash_part') or 0)
-        bank_part = Decimal(request.POST.get('bank_part') or 0)
 
         team = Team.objects.get(id=team_id)
         
@@ -51,26 +60,22 @@ def dealing_items(request):
             quantity = int(qty_str)
             subtotal = item.current_price * quantity
             cart.append((item, quantity, subtotal))
-            
+        
         items_price = sum(subtotal for _, _, subtotal in cart)
+    
+        if not cart:
+            messages.error(request, "هیچ کالایی برای معامله انتخاب نشده است", extra_tags='alert-danger')
+            return redirect('market:dealing_items')
         
-        if pay_method == 'cash':
-            cash_part = items_price
-            bank_part = 0
-        elif pay_method == 'bank':
-            bank_part = items_price
-            cash_part = 0
-            
-        total_payment = cash_part + bank_part
-        if total_payment != items_price:
-            return JsonResponse({'error': f"مبلغ پرداختی ({total_payment}) (ها)باید دقیقاً برابر با قیمت کالا ({items_price}) باشد"})
-        
-            
+        # ---------------- Buying ----------------
         if operation == 'buying':
-            if team.cash < cash_part:
-                return JsonResponse({'error': f"موجودی نقدی گروه {team.team_number} برای خرید کالا کافی نیست."})
-            elif team.bank_balance < bank_part:
-                return JsonResponse({'error': f"موجودی بانکی گروه {team.team_number} برای خرید کالا کافی نیست."})
+            if team.bank_balance < items_price:
+                messages.error(
+                    request,
+                    f'موجودی حساب گروه {team.team_number} برای خرید کالا (های) انتخابی کافی نیست',
+                    extra_tags='alert-danger'
+                )
+                return redirect('market:dealing_items')
             
             for item, quantity, subtotal in cart:
                 team_item, _ = TeamItem.objects.get_or_create(team=team, item=item)
@@ -78,37 +83,49 @@ def dealing_items(request):
                 team_item.quantity += quantity
                 team_items.append(team_item)
                 buyOrSell.append(f'{quantity} عدد {item.name}')
-                
-            team.cash -= cash_part
-            team.bank_balance -= bank_part
+                    
+            team.bank_balance -= items_price
+            TeamItem.objects.bulk_update(team_items, ['quantity'])
+            team.save()
+            
             items_str = '\n'.join(buyOrSell)
-            results.append(f'گروه {team.group_name}، \n {items_str} خریداری کرد')
+            messages.success(
+                request,
+                f"گروه {team.group_name} \n {items_str} \n خریداری کرد".replace("\n", "<br>"),
+                extra_tags='alert-success'
+            )
 
-        
+        # ---------------- Selling ----------------
         elif operation == 'selling':
             for item, quantity, subtotal in cart:
-                team_item = TeamItem.objects.get(team=team, item=item)
+                try:
+                    team_item = TeamItem.objects.get(team=team, item=item)
+                except TeamItem.DoesNotExist:
+                    messages.error(request, f"تیم {team.group_name} موجودی از {item.name} ندارد", extra_tags='alert-danger')
+                    return redirect('market:dealing_items')
+                
                 if team_item.quantity < quantity:
-                    return JsonResponse({'error' : f"تیم موجودی کافی از {item.name} ندارد"})
+                    messages.error(request,
+                    f"تیم موجودی کافی از {item.name} ندارد",
+                    extra_tags='alert-danger')
+                    return redirect('market:dealing_items')
                 
                 team_item.quantity -= quantity
                 team_items.append(team_item)
                 buyOrSell.append(f'{quantity} عدد {item.name}')
                 
-            team.cash += cash_part
-            team.bank_balance += bank_part
+            team.bank_balance += items_price
+            TeamItem.objects.bulk_update(team_items, ['quantity'])
+            team.save()
+            
             items_str = '\n'.join(buyOrSell)
-            results.append(f"فروش {items_str} \n توسط تیم {team.group_name} انجام شد")
-            
-            
-        TeamItem.objects.bulk_update(team_items, ['quantity'])
-        team.save()
-        team.calculate_total_assets()
+            messages.success(
+                request,
+                f"فروش \n {items_str} \n توسط تیم {team.group_name} انجام شد".replace("\n", "<br>"),
+                extra_tags='alert-success'
+            )
 
-        if not results:
-            return JsonResponse({'error': "هیچ کالایی برای معامله انتخاب نشده است"})
-
-        return JsonResponse({'success': results})
+        return redirect('market:dealing_items')
 
     return render(request, 'market/dealing_items.html', {
         'teams': teams,

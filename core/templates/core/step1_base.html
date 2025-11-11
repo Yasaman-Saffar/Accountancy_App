@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block css_files %}
+{% endblock css_files %}
+
+{% block page_title %}صفحه اول{% endblock page_title %}
+
+{% block page_content %}
+<div class="container text-center mt-5 col-md-6">
+  <h2 class="mb-4"> داده های اولیه مسابقه </h2>
+  <form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label>مدت زمان مسابقه:</label>
+      <div class="d-flex gap-2">
+        <input type="number" name="hours" placeholder="ساعت" class="form-control">
+        <input type="number" name="minutes" placeholder="دقیقه" class="form-control">
+      </div>
+    </div>
+    <div class="mb-3">
+      <label>درصد سود بانک:</label>
+      <input type="number" step="0.1" name="bank_rate" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label>بازه زمانی اعمال سود (ثانیه):</label>
+      <input type="number" name="bank_interval" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label>سرمایه اولیه هر گروه:</label>
+      <input type="number" step="50" name="initial_capital" class="form-control" required>
+    </div>
+    <div class="mt-3 mb-5">
+      <button type="submit" class="btn btn-primary btn-lg mt-2">مرحله بعد</button>
+      <a href="{% url 'core:setting' %}" class="btn btn-secondary btn-lg mt-2">بازگشت</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block page_scripts %}{% endblock page_scripts %}

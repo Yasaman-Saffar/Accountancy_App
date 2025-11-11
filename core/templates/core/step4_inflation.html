@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block css_files %}
+{% endblock css_files %}
+
+{% block page_title %}صفحه چهارم{% endblock page_title %}
+
+{% block page_content %}
+<div class="container text-center mt-5" dir="rtl">
+
+  {% if success %}
+    <div id="success-message" class="alert alert-success position-fixed top-0 start-50 translate-middle-x mt-3 shadow" 
+         style="z-index: 9999; width: 50%;">
+         .اطلاعات با موفقیت ذخیره شدند
+          بازگشت به صفحه اول...
+    </div>
+  {% endif %}
+
+  <h2 class="mb-4">قیمت کالاها پس از هر تورم</h2>
+
+  <form method="POST">
+    {% csrf_token %}
+
+    <!-- فیلد تعداد دفعات تورم -->
+    <div class="mb-3 col-md-3 mx-auto">
+      <label>تعداد دفعات تورم:</label>
+      <input type="number" id="rounds" name="rounds" value="{{ rounds|default:1 }}" class="form-control" min="1" required>
+    </div>
+
+    <!-- جدول -->
+    {% if items %}
+    <div class="table-responsive">
+      <table class="table table-bordered mt-4 text-center align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>تورم</th>
+            {% for item in items %}
+              <th>{{ item.name }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody id="inflation-rows">
+          <!-- ردیف‌ها با جاوااسکریپت ساخته می‌شن -->
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <div class="mt-4 mb-5">
+      <button type="submit" class="btn btn-primary btn-lg mx-2">ذخیره اطلاعات</button>
+      <a href="{% url 'core:setup_step3' %}" class="btn btn-info btn-lg mx-2">مرحله قبل</a>
+    </div>
+  </form>
+</div>
+
+<script>
+{% if success %}
+    setTimeout(() => {
+      window.location.href = "{% url 'core:setting' %}";
+    }, 4000);
+{% endif %}
+
+const roundsInput = document.getElementById('rounds');
+const tbody = document.getElementById('inflation-rows');
+const items = [{% for item in items %}{id: {{ item.id }}, name: "{{ item.name }}"},{% endfor %}];
+
+function renderRows(count) {
+  tbody.innerHTML = ''; // پاک‌سازی ردیف‌های قبلی
+
+  for (let r = 1; r <= count; r++) {
+    const tr = document.createElement('tr');
+    let tds = `<td>تورم ${r}</td>`;
+    items.forEach(item => {
+      tds += `<td><input type="number" step="0.01" name="price_${item.id}_${r}" class="form-control" required></td>`;
+    });
+    tr.innerHTML = tds;
+    tbody.appendChild(tr);
+  }
+}
+
+roundsInput.addEventListener('input', () => {
+  const count = parseInt(roundsInput.value) || 0;
+  if (count > 0) renderRows(count);
+});
+
+renderRows(parseInt(roundsInput.value) || 1);
+</script>
+{% endblock %}

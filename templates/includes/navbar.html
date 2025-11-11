@@ -1,0 +1,73 @@
+<nav class="navbar" style="background-color: #badedaff;
+                          min-height: 70px;
+                          position: sticky;
+                          top: 0; 
+                          z-index: 1000;">
+  <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
+
+    <!-- راست: دکمه ها در دسکتاپ -->
+    {% if is_admin or is_banker %}
+    <div class="d-none d-lg-flex gap-2">
+      <a class="btn btn-warning" href="{% url 'bank:bank_home' %}">بانک</a>
+      <a class="btn btn-info" href="{% url 'scoreboard:scoreboard' %}">جدول امتیازات</a>
+      {% if is_admin %}
+        <a class="btn btn-dark" href="{% url 'core:apply_inflation_interest' %}">اعمال تورم و سود بانک</a>
+      {% endif %}
+    </div>
+    {% else %}
+      <div style="width: 110px;"></div>
+    {% endif %}
+
+    <!-- سمت چپ: خروج (فقط اگر مدیر است) -->
+      {% if is_admin %}
+        <a class="btn btn-outline-danger" href="{% url 'core:admin_logout' %}">خروج مدیر</a>
+      {% elif is_banker %}
+        <a class="btn btn-outline-danger" href="{% url 'core:banker_logout' %}">خروج بانکدار</a>
+      {% endif %}
+
+    <!-- برند وسط دقیقا وسط -->
+    <a class="navbar-brand fw-bold text-center position-absolute top-50 start-50 translate-middle" href="#">
+      Calc & Cash
+    </a>
+
+
+    <!-- همبرگری فقط موبایل -->
+    {% if is_admin or is_banker %}
+      <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    {% endif %}
+  </div>
+
+  <!-- منو در موبایل -->
+  {% if is_admin or is_banker %}
+  <div class="collapse navbar-collapse d-lg-none mt-2" id="navbarNav">
+    <ul class="navbar-nav gap-2">
+      <li><a class="btn btn-warning w-100" href="{% url 'bank:bank_home' %}">بانک</a></li>
+      <li><a class="btn btn-info w-100" href="{% url 'scoreboard:scoreboard' %}">جدول امتیازات</a></li>
+      {% if is_admin %}
+        <li><a class="btn btn-dark w-100" href="{% url 'core:apply_inflation' %}">اعمال تورم و سود بانک</a></li>
+      {% endif %}
+    </ul>
+  </div>
+  {% endif %}
+</nav>
+
+
+
+{% comment %} <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link active" aria-current="page" href="#">Home</a>
+        <a class="nav-link" href="#">Features</a>
+        <a class="nav-link" href="#">Pricing</a>
+        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+      </div>
+    </div>
+  </div>
+</nav> {% endcomment %}

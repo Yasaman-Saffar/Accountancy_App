@@ -6,26 +6,22 @@
     <link rel="stylesheet" href="{% static "core/Home.css" %}">
 {% endblock css_files %}
 
-{% block page_title %}{% endblock page_title %}
+{% block page_title %}صفحه مسابقه{% endblock page_title %}
 
 {% block page_content %}
     
     <div class="container text-center mt-5">
-    <h1 class="mb-4"> شهر ریاضی</h1>
+    <h1 class="mb-4">صفحه مسابقه</h1>
 
     <div class="d-grid gap-3 col-6 mx-auto">
-        <a href="{% url 'add_new_group' %}" class="btn btn-success btn-lg"> وارد کردن گروه جدید</a><br>
-<<<<<<< HEAD
-         <a href="{% url 'bank:bank_home' %}" class="btn btn-warning btn-lg"> بانک</a><br>
-        <a href="{% url 'scoreboard' %}" class="btn btn-info btn-lg"> تابلوی اعلانات</a><br>
-=======
-         <a href="{% url 'bank_home' %}" class="btn btn-warning btn-lg"> بانک</a><br>
-        <a href="{% url 'scoreboard:scoreboard' %}" class="btn btn-info btn-lg">تابلوی اعلانات</a>
->>>>>>> c7a4b519922dc0cc7b18b35d863b89748b28111f
+        <a href="{% url 'bank:bank_home' %}" class="btn btn-warning btn-lg"> بانک</a>
+        <a href="{% url 'scoreboard:scoreboard' %}" class="btn btn-info btn-lg">جدول امتیازات</a>
+        {% if is_admin %}
+        <a href="{% url 'core:apply_inflation_interest' %}" class="btn btn-dark btn-lg">اعمال تورم و سود بانک</a>
+        {% endif %}
+        <a href="{% url 'core:Entry_page' %}" class="btn btn-secondary btn-lg">بازگشت</a>
     </div>
     </div>
-    
-
 {% endblock page_content %}
 
 {% block page_scripts %}{% endblock page_scripts %}

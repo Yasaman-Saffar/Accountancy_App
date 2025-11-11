@@ -3,10 +3,10 @@
 
 
 {% block css_files %}
-    <link rel="stylesheet" href="{% static "core/Home.css" %}">
+    <link rel="stylesheet" href="{% static "bank/bank_home.css" %}">
 {% endblock css_files %}
 
-{% block page_title %}{% endblock page_title %}
+{% block page_title %}صفحه اصلی بانک{% endblock page_title %}
 
 {% block page_content %}
 
@@ -14,15 +14,11 @@
     <h1 class="mb-4"> بانک </h1>
 
     <div class="d-grid gap-3 col-6 mx-auto">
-        <a href="{% url 'bank:buying_questions' %}" class="btn btn-success btn-lg"> خرید سوال</a>
-        <a href="{% url 'bank:trading_questions' %}" class="btn btn-info btn-lg"> تبادل سوال بین گروه ها</a>
+        <a href="{% url 'bank:buying_questions' %}" class="btn btn-primary btn-lg"> خرید سوال</a>
         <a href="{% url 'bank:receive_award' %}" class="btn btn-warning btn-lg"> دریافت جایزه سوال</a>
-
-        <a href="{% url 'bank:withdrawal_and_deposit' %}" class="btn btn-info btn-lg"> برداشت پول از حساب<br>واریز پول به حساب </a>
-
+        <a href="{% url 'bank:trading_questions' %}" class="btn btn-danger btn-lg"> تبادل سوال بین گروه ها</a>
         <a href="{% url 'market:dealing_items' %}" class="btn btn-info btn-lg">خرید و فروش کالا</a>
-
-        <a href="{% url 'core:home' %}" class="btn btn-secondary btn-lg">بازگشت</a>
+        <a href="{% url 'core:home' %}" class="btn btn-dark btn-lg">بازگشت</a>
         
     </div>
     </div>
