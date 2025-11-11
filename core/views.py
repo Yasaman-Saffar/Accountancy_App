@@ -123,6 +123,8 @@ def apply_interest_view(request):
 
 # Authorization
 def admin_or_user(request):
+    request.session['is_admin'] = False
+    request.session['is_banker'] = False
     return render(request, 'core/admin_or_user.html')
 
 def admin_login(request):
