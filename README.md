@@ -76,8 +76,8 @@ The app keeps the bank ledger, tracks solved questions, applies inflation and in
 ## Installation
 
 ```bash
-git clone https://github.com/<your-username>/accountancyApp.git
-cd accountancyApp
+git clone https://github.com/Yasaman-Saffar/AccountancyApp.git
+cd AccountancyApp
 python -m venv .venv
 source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 pip install -r requirements.txt
@@ -86,13 +86,16 @@ pip install -r requirements.txt
 
 Create a PostgreSQL database:
 
+```bash
 CREATE DATABASE calc_cash;
 CREATE USER calc_cash_user WITH PASSWORD 'change-me';
 GRANT ALL PRIVILEGES ON DATABASE calc_cash TO calc_cash_user;
+```
 
 
 Create .env in project root:
 
+```bash
 DJANGO_SECRET_KEY=change-me
 DB_NAME=calc_cash
 DB_USER=calc_cash_user
@@ -100,16 +103,20 @@ DB_PASSWORD=change-me
 DB_HOST=127.0.0.1
 DB_PORT=5432
 STAFF_PASSPHRASE=change-me
+```
 
 
 Apply migrations:
 
+```bash
 python manage.py migrate
-
+```
 
 Run:
 
+```bash
 python manage.py runserver
+```
 
 ## Project Background
 
